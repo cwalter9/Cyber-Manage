@@ -5,5 +5,8 @@ function getuptime () {
 }
 
 for i in `echo "select id from nethosts" | $DBQ`; do
-  echo $i
+  sysName=`echo "select hostname from nethosts where id='$i'" | $DBQ`
+  sysUptime=`getuptime $sysName`
+  CurrTimeSecs=`date +%s`
+  echo "update nethosts set uptime='$sysUptime',lastchecked='$CurrTimeSecs' where id='$i'" | $DBQ
 done
