@@ -1,9 +1,8 @@
 Directory=/admin/Cyber-Manage/
-LogDirRoot=/var/log/
+LogDirRoot=/var/log
 LogLevel=10
 
 [- Only edit below if you know what your doing -]
 
-LogDirSub=cmanage
-MainLogFile=$LogDir$LogDirSub/cmanage.log
-ModLogFile=$LogDir$LogDirSub/modules.log
+MainLogFile=/var/log/cmanage.log
+ModLogFile=/var/log/modules.log

@@ -27,22 +27,15 @@ function logmess () {
   fi
 }
 
-LogDir=`getconfvar LogDirRoot`
-if [ ! -d "$LogDir" ]; then
-  logmess "Root log dir missing exiting" "1"
-  exit 2
+MainLogFile=`getconfvar MainLogFile`
+if [ ! -f $MainLogFile ]; then
+  logmess "Missing main logfile creating now" "10"
+  touch $MainLogFile
 fi
 
-LogDirSub=`getconfvar LogDirSub`
-RealLogDir="$LogDir$LogDirSub"
-logmess "RealLogDir is $RealLogDir" "10"
-if [ ! -d $RealLogDir ]; then
-  logmess "Log sub dir missing creating new" "4"
-  mkdir $RealLogDir
+ModLogFile=`getconfvar ModLogFile`
+if [ ! -f $ModLogFile ]; then
+  logmess "Missing mod logfile creating now" "10"
+  touch $ModLogFile
 fi
-
-
-#LogDirSub=cmanage
-#MainLogFile=$LogDir$LogDirSub/cmanage.log
-#ModLogFile=$LogDir$LogDirSub/modules.log
 
