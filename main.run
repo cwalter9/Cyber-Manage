@@ -2,4 +2,10 @@
 
 source includes/main.inc
 
+logmess "Starting swver.mod" "10"
+
 modules/swver.mod
+
+logmess "Finished swver.mod" "10"
+
+echo $loglevel
