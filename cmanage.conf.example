@@ -1,0 +1,8 @@
+Directory=/admin/Cyber-Manage/
+LogDir=/var/log/
+
+[- Only edit below if you know what your doing -]
+
+LogDirSub=cmanage
+MainLogFile=cmanage.log
+ModLogFile=modules.log
