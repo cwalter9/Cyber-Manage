@@ -12,3 +12,4 @@ if [ $dbtype = "mysql" ]; then
   DBQ="mysql -u$dbuser -p$dbpass -D$dbname -s"
 fi
 
+export DBQ
