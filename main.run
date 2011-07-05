@@ -2,10 +2,11 @@
 
 source includes/main.inc
 
-logmess "Starting swver.mod" "10"
+#logmess "Starting swver.mod" "10"
+#modules/swver.mod
+#logmess "Finished swver.mod" "10"
 
-modules/swver.mod
+#echo $loglevel
 
-logmess "Finished swver.mod" "10"
-
-echo $loglevel
+#modules/cisco.mod
+snmp/main.run
