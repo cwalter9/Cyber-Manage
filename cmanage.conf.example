@@ -1,5 +1,5 @@
 Directory=/admin/Cyber-Manage/
-LogDir=/var/log/
+LogDirRoot=/var/log/
 LogLevel=10
 
 [- Only edit below if you know what your doing -]

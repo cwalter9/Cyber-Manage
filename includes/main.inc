@@ -14,7 +14,11 @@ if [ $dbtype = "mysql" ]; then
   DBQ="mysql -u$dbuser -p$dbpass -D$dbname -s"
 fi
 
-loglevel=`more $configfile | grep LogLevel | gawk -F= '{ print $2 }'`
+function getconfvar () {
+  more $configfile | grep $1 | gawk -F= '{ print $2 }'
+}
+
+loglevel=`getconfvar LogLevel`
 export DBQ loglevel
 
 function logmess () {
@@ -23,18 +27,18 @@ function logmess () {
   fi
 }
 
-if [ ! -d $LogDir ]; then
+LogDir=`getconfvar LogDirRoot`
+if [ ! -d "$LogDir" ]; then
   logmess "Root log dir missing exiting" "1"
   exit 2
 fi
 
-if [ ! -d $LogDir$LogDirSub ]; then
+LogDirSub=`getconfvar LogDirSub`
+RealLogDir="$LogDir$LogDirSub"
+logmess "RealLogDir is $RealLogDir" "10"
+if [ ! -d $RealLogDir ]; then
   logmess "Log sub dir missing creating new" "4"
-  mkdir $LogDir$LogDirSub
-  if [ ! -d $LogDir$LogDirSub ]; then
-    logmess "Log sub dir still missing exiting" "1"
-    exit 2
-  fi
+  mkdir $RealLogDir
 fi
 
 
