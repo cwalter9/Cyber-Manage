@@ -10,3 +10,5 @@ for i in `echo "select id from nethosts" | $DBQ`; do
   CurrTimeSecs=`date +%s`
   echo "update nethosts set uptime='$sysUptime',lastchecked='$CurrTimeSecs' where id='$i'" | $DBQ
 done
+
+snmp/sensatronics-em1.snmp

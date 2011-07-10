@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ -f /tmp/cmanage.run ]; then
+  exit 3
+else
+  touch /tmp/cmanage.run
+fi
+
 source includes/main.inc
 
 #logmess "Starting swver.mod" "10"
@@ -8,5 +14,8 @@ source includes/main.inc
 
 #echo $loglevel
 
-#modules/cisco.mod
+# modules/cisco.mod
+
 snmp/main.run
+
+rm -rf /tmp/cmanage.run

@@ -1,0 +1,21 @@
+
+function procg1 () {
+  g1temp=`snmpget -v 1 -c public -O n $1 .1.3.6.1.4.1.16174.1.1.3.3.1.3.0 | gawk -F\" '{ print $2 }'`
+
+  echo "insert into sensatronic_em1 set sensor='G1 Temp',value='$g1temp'" | $DBQ
+}
+
+function procg3 () {
+  g3temp=`snmpget -v 1 -c public -O n $1 .1.3.6.1.4.1.16174.1.1.3.3.3.3.0 | gawk -F\" '{ print $2 }'`
+  g3hum=`snmpget -v 1 -c public -O n $1 .1.3.6.1.4.1.16174.1.1.3.3.3.6.0 | gawk -F\" '{ print $2 }'`
+
+  echo "insert into sensatronic_em1 set sensor='G3 Temp',value='$g3temp'" | $DBQ
+  echo "insert into sensatronic_em1 set sensor='G3 Humidity',value='$g3hum'" | $DBQ
+}
+
+for i in `echo "select id from nethosts where make='Sensatronic' and model='EM1'" | $DBQ`; do
+  hostip=`echo "select ipaddr from nethosts where id='$i'" | $DBQ`
+  echo $hostip
+#  procg1 $hostip
+#  procg3 $hostip
+done
