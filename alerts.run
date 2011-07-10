@@ -1,0 +1,17 @@
+#!/bin/bash
+
+source includes/main.inc
+
+for i in `echo "select id from alerts where status='0'" | $DBQ`; do
+  userid=`echo "select userid from alerts where id='$i'" | $DBQ`
+  alertmode=`echo "select alertmode from users where id='$i'" | $DBQ`
+  if [ $alertmode = "1" ]; then
+    echo "Sending SMS message"
+    smsaddr=`echo "select smsaddr,\"@\",smsdomain from users where id='$userid'" | $DBQ`
+    echo "to $smsaddr"
+    echo "select message from alerts where id='$i'" | $DBQ > /tmp/cm.msg
+    echo "Message is `cat /tmp/cm.msg`"
+    rm -rf /tmp/cm.msg
+  fi
+  echo "update alerts set status='1' where id='$i'" | $DBQ
+done
