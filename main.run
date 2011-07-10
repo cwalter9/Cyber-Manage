@@ -4,6 +4,7 @@ if [ -f /tmp/cmanage.run ]; then
   exit 3
 else
   touch /tmp/cmanage.run
+  echo $$ > /tmp/cmanage.pid
 fi
 
 source includes/main.inc
@@ -18,4 +19,4 @@ source includes/main.inc
 
 snmp/main.run
 
-rm -rf /tmp/cmanage.run
+rm -rf /tmp/cmanage.run /tmp/cmanage.pid

@@ -1,0 +1,23 @@
+
+nethostchktime=`echo "select varint from configs where varname='nethosts-check'" | $DBQ`
+
+function getuptime () {
+  snmpget -v $2 -c $snmpcomm -O n $1 .1.3.6.1.2.1.1.3.0 | gawk '{ print $4 }' | gawk -F\( '{ print $2 }' | gawk -F\) '{ print $1 }'
+}
+
+for i in `echo "select id from nethosts" | $DBQ`; do
+  snmpid=`echo "select snmpid from nethosts where id='$i'" | $DBQ`
+  snmpver=`echo "select snmpver from snmp_profiles where id='$snmpid'" | $DBQ`
+  snmpcomm=`echo "select snmpcomm from snmp_profiles where id='$snmpid'" | $DBQ`
+  lastchecked=`echo "select lastchecked from nethosts where id='$i'" | $DBQ`
+  CurrTimeSecs=`date +%s`
+  timecheck=`echo "$CurrTimeSecs - $lastchecked" | bc`
+  if [ $timecheck -gt $nethostchktime ]; then
+    sysName=`echo "select hostname from nethosts where id='$i'" | $DBQ`
+    sysUptime=`getuptime $sysName $snmpver $snmpcomm`
+    CurrTimeSecs=`date +%s`
+    echo "update nethosts set uptime='$sysUptime',lastchecked='$CurrTimeSecs' where id='$i'" | $DBQ
+  fi
+done
+
+

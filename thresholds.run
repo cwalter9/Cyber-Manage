@@ -1,0 +1,11 @@
+#!/bin/bash
+
+source includes/main.inc
+
+for i in `echo "select id from thresholds" | $DBQ`; do
+  name=`echo "select name from thresholds where id='$i'" | $DBQ`
+  value=`echo "select value from thresholds where id='$i'" | $DBQ`
+  echo "$name has max of $value"
+done
+
+snmp/sensatronics-em1.alerts

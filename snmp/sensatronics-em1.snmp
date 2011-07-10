@@ -15,7 +15,7 @@ function procg3 () {
 
 for i in `echo "select id from nethosts where make='Sensatronic' and model='EM1'" | $DBQ`; do
   hostip=`echo "select ipaddr from nethosts where id='$i'" | $DBQ`
-  echo $hostip
-#  procg1 $hostip
-#  procg3 $hostip
+#  echo $hostip
+  procg1 $hostip
+  procg3 $hostip
 done
