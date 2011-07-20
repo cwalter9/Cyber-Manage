@@ -16,6 +16,7 @@ source includes/main.inc
 #echo $loglevel
 
 # modules/cisco.mod
+modules/scanner.mod
 
 snmp/main.run
 
