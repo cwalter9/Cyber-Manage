@@ -37,6 +37,10 @@ function logmess () {
   fi
 }
 
+function dblog () {
+  echo "insert into sys_log set system='$1',message='$2'" | $DBQ
+}
+
 MainLogFile=`getconfvar MainLogFile`
 if [ ! -f $MainLogFile ]; then
   logmess "Missing main logfile creating now" "10"

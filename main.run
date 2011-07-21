@@ -1,13 +1,18 @@
 #!/bin/bash
 
+cd `cat /etc/cmanage.conf | grep Directory | gawk -F= '{ print $2 }'`
+
+source includes/main.inc
+
 if [ -f /tmp/cmanage.run ]; then
+  cpid=`cat /tmp/cmanage.pid`
+  dblog Main "Exiting - Already running as $cpid"
   exit 3
 else
+  dblog Main "Starting - Initial startup"
   touch /tmp/cmanage.run
   echo $$ > /tmp/cmanage.pid
 fi
-
-source includes/main.inc
 
 #logmess "Starting swver.mod" "10"
 #modules/swver.mod
@@ -16,6 +21,7 @@ source includes/main.inc
 #echo $loglevel
 
 # modules/cisco.mod
+
 modules/scanner.mod
 
 snmp/main.run

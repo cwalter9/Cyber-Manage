@@ -1,21 +1,30 @@
 #!/bin/bash
 source includes/main.inc
 
-rescant='600'
+iprescant=`echo "select varint from configs where varname='scn-iprescan'" | $DBQ`
+netrescant=`echo "select varint from configs where varname='scn-netrescan'" | $DBQ`
+addraddcount=`echo "select varint from configs where varname='scn-addcnt'" | $DBQ`
+
+function dbevent () {
+  echo "insert into scn_events set ipid='$1',pstat='$2'" | $DBQ
+}
 
 loopc=0
 function addaddr () {
 # newip=`echo 10.1.$((RANDOM%256)).$((RANDOM%256))`
- newip=`echo 10.1.1.$((RANDOM%256))`
- newip=`echo 10.2.128.$((RANDOM%256))`
+ newip=`echo $1.$((RANDOM%256))`
  ipid=`echo "select id from scn_address where ipaddr='$newip'" | $DBQ`
  if [ -z $ipid ]; then
    echo "insert into scn_address set ipaddr='$newip'" | $DBQ
+   ipid=`echo "select id from scn_address where ipaddr='$newip'" | $DBQ`
+   dbevent $ipid 0
  fi
 }
 
-while [ $loopc -le 10 ] ; do
-  addaddr
+while [ $loopc -le $addraddcount ] ; do
+  for i in `echo "select subnet from scn_networks" | $DBQ`; do
+    addaddr $i
+  done
   loopc=`echo $loopc+1 | bc`
 done
 
@@ -28,15 +37,17 @@ for i in `echo "select id from scn_address where status='0'" | $DBQ`; do
   dnow=`date +%s`
   if [ $status = 1 ]; then
     echo "update scn_address set status='2',lastcheck='$dnow' where id='$i'" | $DBQ
+    dbevent $i 2
   elif [ $status = 0 ]; then
     echo "update scn_address set status='1',lastcheck='$dnow' where id='$i'" | $DBQ
+    dbevent $i 1
   fi
 done
 
-# Scan for and process addresses that are older that rescant seconds
+# Scan for and process addresses that are older that iprescant seconds
 
 dnow=`date +%s`
-ctime=`echo $dnow-$rescant | bc`
+ctime=`echo $dnow-$iprescant | bc`
 for i in `echo "select id from scn_address where status!='0'" | $DBQ`; do
   stime=`echo "select lastcheck from scn_address where id='$i'" | $DBQ`
   if [ $ctime -gt $stime ]; then
@@ -46,8 +57,22 @@ for i in `echo "select id from scn_address where status!='0'" | $DBQ`; do
     dnow=`date +%s`
     if [ $status = 1 ]; then
       echo "update scn_address set status='2',lastcheck='$dnow' where id='$i'" | $DBQ
+      dbevent $i 2
     elif [ $status = 0 ]; then
       echo "update scn_address set status='1',lastcheck='$dnow' where id='$i'" | $DBQ
+      dbevent $i 1
     fi
+  fi
+done
+
+# Count addresses for each subnet and update subnet count
+
+for i in `echo "select subnet from scn_networks" | $DBQ`; do
+  dnow=`date +%s`
+  nctime=`echo $dnow-$netrescant | bc`
+  lcheck=`echo "select lastcheck from scn_networks where subnet='$i'" | $DBQ`
+  if [ $nctime -gt $lcheck ]; then
+    addrcount=`echo "select count(*) from scn_address where ipaddr like '$i.%'" | $DBQ`
+    echo "update scn_networks set addrcount='$addrcount',lastcheck='$dnow' where subnet='$i'" | $DBQ
   fi
 done
