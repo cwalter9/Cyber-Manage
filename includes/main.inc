@@ -41,6 +41,10 @@ function dblog () {
   echo "insert into sys_log set system='$1',message='$2'" | $DBQ
 }
 
+function setdnow () {
+  dnow=`date +%s`
+}
+
 MainLogFile=`getconfvar MainLogFile`
 if [ ! -f $MainLogFile ]; then
   logmess "Missing main logfile creating now" "10"

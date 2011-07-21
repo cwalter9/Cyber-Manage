@@ -54,13 +54,18 @@ for i in `echo "select id from scn_address where status!='0'" | $DBQ`; do
     ipaddr=`echo "select ipaddr from scn_address where id='$i'" | $DBQ`
     ping -c 1 -w 1 $ipaddr > /dev/null
     status="$?"
+    cstatus=`echo "select status from scn_address where id='$i'" | $DBQ`
     dnow=`date +%s`
     if [ $status = 1 ]; then
       echo "update scn_address set status='2',lastcheck='$dnow' where id='$i'" | $DBQ
-      dbevent $i 2
+      if [ $cstatus -eq 1 ]; then
+        dbevent $i 2
+      fi
     elif [ $status = 0 ]; then
       echo "update scn_address set status='1',lastcheck='$dnow' where id='$i'" | $DBQ
-      dbevent $i 1
+      if [ $cstatus -eq 2 ]; then
+        dbevent $i 1
+      fi
     fi
   fi
 done
@@ -73,6 +78,7 @@ for i in `echo "select subnet from scn_networks" | $DBQ`; do
   lcheck=`echo "select lastcheck from scn_networks where subnet='$i'" | $DBQ`
   if [ $nctime -gt $lcheck ]; then
     addrcount=`echo "select count(*) from scn_address where ipaddr like '$i.%'" | $DBQ`
+    dnow=`date +%s`
     echo "update scn_networks set addrcount='$addrcount',lastcheck='$dnow' where subnet='$i'" | $DBQ
   fi
 done

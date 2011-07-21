@@ -21,9 +21,15 @@ fi
 #echo $loglevel
 
 # modules/cisco.mod
+# modules/scanner.mod
 
-modules/scanner.mod
+for i in `echo "select name from sys_modules where status='1'" | $DBQ`; do
+  dblog Modules "Starting $i.mod"
+  modules/$i.mod
+  dblog Modules "Completed $i.mod"
+done
 
 snmp/main.run
 
+dblog Main "Exiting - Completed"
 rm -rf /tmp/cmanage.run /tmp/cmanage.pid
