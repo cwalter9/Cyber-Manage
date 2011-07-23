@@ -6,12 +6,18 @@ for i in `echo "select id from alerts where status='0'" | $DBQ`; do
   userid=`echo "select userid from alerts where id='$i'" | $DBQ`
   alertmode=`echo "select alertmode from users where id='$userid'" | $DBQ`
   if [ $alertmode = "1" ]; then
-    echo "Sending SMS message"
-    smsaddr=`echo "select smsaddr,\"@\",smsdomain from users where id='$userid'" | $DBQ`
-    echo "to $smsaddr"
+#    echo "Sending SMS message"
+    smsaddr=`echo "select smsaddr from users where id='$userid'" | $DBQ`
+    smsdom=`echo "select smsdomain from users where id='$userid'" | $DBQ`
+#    echo "to $smsaddr@$smsdom"
     echo "select message from alerts where id='$i'" | $DBQ > /tmp/cm.msg
-    echo "Message is `cat /tmp/cm.msg`"
+#    echo "Message is `cat /tmp/cm.msg`"
+    cat /tmp/cm.msg | mail $smsaddr@$smsdom
+    smsstat="$?"
+    if [ $smsstat -eq 0 ]; then
+      echo "update alerts set status='1' where id='$i'" | $DBQ
+    fi
     rm -rf /tmp/cm.msg
   fi
-  echo "update alerts set status='1' where id='$i'" | $DBQ
+#  echo "update alerts set status='1' where id='$i'" | $DBQ
 done
