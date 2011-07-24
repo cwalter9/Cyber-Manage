@@ -28,7 +28,7 @@ done
 
 dblog Thresholds "Starting - Thresholds run"
 ./thresholds.run
-dblog Alerts "Completed - Thresholds run"
+dblog Thresholds "Completed - Thresholds run"
 
 dblog Alerts "Starting alerts run"
 ./alerts.run
