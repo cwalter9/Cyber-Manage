@@ -9,6 +9,7 @@ if [ -f /tmp/cmanage.run ]; then
   dblog Main "Exiting - Already running as $cpid"
   exit 3
 else
+  starttime=`date +%s`
   dblog Main "Starting - Initial startup"
   touch /tmp/cmanage.run
   echo $$ > /tmp/cmanage.pid
@@ -40,3 +41,8 @@ dblog SNMP "Completed SNMP main run"
 
 dblog Main "Exiting - Completed"
 rm -rf /tmp/cmanage.run /tmp/cmanage.pid
+
+endtime=`date +%s`
+runtime=`echo "$endtime - $starttime" | bc`
+
+dblog Main "Runtime - Success took $runtime seconds"
