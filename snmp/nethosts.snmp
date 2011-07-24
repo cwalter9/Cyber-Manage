@@ -6,6 +6,10 @@ function getuptime () {
   snmpget -v $2 -c $snmpcomm -O n $1 .1.3.6.1.2.1.1.3.0 | gawk '{ print $4 }' | gawk -F\( '{ print $2 }' | gawk -F\) '{ print $1 }'
 }
 
+function getsysname () {
+  snmpget -v $2 -c $snmpcomm -O n $1 snmpget -v $2 -c $snmpcomm -O n $1 .1.3.6.1.2.1.1.5.0  | gawk '{ print $4 }'
+}
+
 for nhost in `echo "select id from scn_address where status='1' and copied='0'" | $DBQ`; do
   ipaddr=`echo "select ipaddr from scn_address where id='$nhost'" | $DBQ`
   echo "insert into nethosts set ipaddr='$ipaddr',ipid='$nhost'" | $DBQ
@@ -39,4 +43,10 @@ for i in `echo "select id from nethosts" | $DBQ`; do
   fi
 done
 
-
+for i in `echo "select id from nethosts where hostname=''" | $DBQ`; do
+  ipaddr=`echo "select ipaddr from nethosts where id='$i'" | $DBQ`
+  nhname=`getsysname $ipaddr`
+  if [ $nhname != '' ]; then
+    echo "update nethosts set hostname='$nhname' where id='$i'" | $DBQ
+  fi
+done
