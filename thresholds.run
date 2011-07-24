@@ -9,3 +9,4 @@ for i in `echo "select id from thresholds" | $DBQ`; do
 done
 
 snmp/sensatronics-em1.alerts
+snmp/nethosts.alerts

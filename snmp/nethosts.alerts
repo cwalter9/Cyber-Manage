@@ -1,15 +1,7 @@
 #!/bin/bash
 
-for i in `echo "SELECT DISTINCT sensor FROM sensatronic_em1" | $DBQ`; do
-  currval=`echo "SELECT sensatronic_em1.value FROM sensatronic_em1 WHERE sensor='$i' ORDER BY sensatronic_em1.timestamp DESC LIMIT 1" | $DBQ`
-  threshval=`echo "select thresholds.value from thresholds where thresholds.name='$i'" | $DBQ`
-  if [ $currval -gt $threshval ]; then
-    echo $i > /tmp/cmsg
-    echo `cat /tmp/cmsg`' is in Alert'
-  fi
+for i in `echo "select id from vw_alt_uptime" | $DBQ`; do
+  hname=`echo "select hostname from vw_alt_uptime where id='$i'" | $DBQ`
+  setalert 1 "$hname has rebooted"
 done
 
-threshval=`echo "select thresholds.value from thresholds where thresholds.name='Uptime'" | $DBQ`
-for i in `echo "select hostname from nethosts where uptime\<'$threshval'" | $DBQ`; do
-  dbalert 1 "
-done

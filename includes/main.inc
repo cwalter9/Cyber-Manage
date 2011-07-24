@@ -60,3 +60,11 @@ fi
 function setalert () {
   echo "insert into alerts set userid='$1',message='$2'" | $DBQ
 }
+
+function getvarint () {
+  echo "select varint from configs where varname='$1'" | $DBQ
+}
+
+function setvarint () {
+  echo "select varint from configs where varname='$1'" | $DBQ
+}

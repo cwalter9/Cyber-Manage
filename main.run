@@ -29,6 +29,10 @@ for i in `echo "select name from sys_modules where status='1'" | $DBQ`; do
   dblog Modules "Completed $i.mod"
 done
 
+dblog Thresholds "Starting - Thresholds run"
+./thresholds.run
+dblog Alerts "Completed - Thresholds run"
+
 dblog Alerts "Starting alerts run"
 ./alerts.run
 dblog Alerts "Completed alerts run"
