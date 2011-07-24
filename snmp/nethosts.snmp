@@ -1,9 +1,25 @@
+#!/bin/bash
 
 nethostchktime=`echo "select varint from configs where varname='nethosts-check'" | $DBQ`
 
 function getuptime () {
   snmpget -v $2 -c $snmpcomm -O n $1 .1.3.6.1.2.1.1.3.0 | gawk '{ print $4 }' | gawk -F\( '{ print $2 }' | gawk -F\) '{ print $1 }'
 }
+
+for nhost in `echo "select id from scn_address where status='1' and copied='0'" | $DBQ`; do
+  ipaddr=`echo "select ipaddr from scn_address where id='$nhost'" | $DBQ`
+  echo "insert into nethosts set ipaddr='$ipaddr',ipid='$nhost'" | $DBQ
+  pstat="$?"
+  if [ $pstat -eq 0 ]; then
+    echo "update scn_address set copied='1' where id='$nhost'" | $DBQ
+  fi
+done
+
+for phost in `echo "select id from nethosts where hostname is null" | $DBQ`; do
+  ipaddr=`echo "select ipaddr from nethosts where id='$phost'" | $DBQ`
+  hname=`dig -x $ipaddr +short | gawk -F. '{ print $1 }'`
+  echo "update nethosts set hostname='$hname' where id='$phost'" | $DBQ
+done
 
 for i in `echo "select id from nethosts" | $DBQ`; do
   snmpid=`echo "select snmpid from nethosts where id='$i'" | $DBQ`
@@ -14,6 +30,9 @@ for i in `echo "select id from nethosts" | $DBQ`; do
   timecheck=`echo "$CurrTimeSecs - $lastchecked" | bc`
   if [ $timecheck -gt $nethostchktime ]; then
     sysName=`echo "select hostname from nethosts where id='$i'" | $DBQ`
+    if [ -z $sysName ]; then
+      sysName=`echo "select ipaddr from nethosts where id='$i'" | $DBQ`
+    fi
     sysUptime=`getuptime $sysName $snmpver $snmpcomm`
     CurrTimeSecs=`date +%s`
     echo "update nethosts set uptime='$sysUptime',lastchecked='$CurrTimeSecs' where id='$i'" | $DBQ

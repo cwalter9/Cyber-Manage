@@ -44,7 +44,7 @@ for i in `echo "select id from scn_address where status='0'" | $DBQ`; do
   fi
 done
 
-# Scan for and process addresses that are older that iprescant seconds
+# Scan for and process addresses that are older than iprescant seconds
 
 dnow=`date +%s`
 ctime=`echo $dnow-$iprescant | bc`
@@ -60,6 +60,8 @@ for i in `echo "select id from scn_address where status!='0'" | $DBQ`; do
       echo "update scn_address set status='2',lastcheck='$dnow' where id='$i'" | $DBQ
       if [ $cstatus -eq 1 ]; then
         dbevent $i 2
+## Alert goes here for change from good to bad IP
+        setalert 1 "$i changed to unavailable"
       fi
     elif [ $status = 0 ]; then
       echo "update scn_address set status='1',lastcheck='$dnow' where id='$i'" | $DBQ

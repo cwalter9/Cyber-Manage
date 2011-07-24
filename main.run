@@ -29,7 +29,13 @@ for i in `echo "select name from sys_modules where status='1'" | $DBQ`; do
   dblog Modules "Completed $i.mod"
 done
 
+dblog Alerts "Starting alerts run"
+./alerts.run
+dblog Alerts "Completed alerts run"
+
+dblog SNMP "Starting SNMP main run"
 snmp/main.run
+dblog SNMP "Completed SNMP main run"
 
 dblog Main "Exiting - Completed"
 rm -rf /tmp/cmanage.run /tmp/cmanage.pid

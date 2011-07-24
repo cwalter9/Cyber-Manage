@@ -57,3 +57,6 @@ if [ ! -f $ModLogFile ]; then
   touch $ModLogFile
 fi
 
+function setalert () {
+  echo "insert into alerts set userid='$1',message='$2'" | $DBQ
+}
