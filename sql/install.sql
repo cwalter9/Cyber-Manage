@@ -15,3 +15,26 @@ CREATE TABLE `sensatronic_em1` (
   `value` float(5,1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=latin1
+
+
+# Added 7-24-11
+
+CREATE TABLE `alerts` (
+  `id` int(255) NOT NULL AUTO_INCREMENT,
+  `userid` int(128) DEFAULT NULL,
+  `message` varchar(255) DEFAULT NULL,
+  `status` int(2) DEFAULT '0',
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1
+
+CREATE TABLE `alerts` (
+  `id` int(255) NOT NULL AUTO_INCREMENT,
+  `userid` int(128) DEFAULT NULL,
+  `message` varchar(255) DEFAULT NULL,
+  `status` int(2) DEFAULT '0',
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1
+
+
