@@ -47,8 +47,15 @@ done
 # Scan for and process addresses that are older than iprescant seconds
 
 ctime=`echo $dnow-$iprescant | bc`
+currmin=`date +%M`
 for i in `echo "select id from scn_address where status!='0'" | $DBQ`; do
   dnow=`date +%s`
+  if [ $currmin -lt 30 ]; then
+    hstat=`echo "select status from scn_address where id='$i'" | $DBQ`
+    if [ $hstat -eq 2 ]; then
+      ctime='1'
+    fi
+  fi
   stime=`echo "select lastcheck from scn_address where id='$i'" | $DBQ`
   if [ $ctime -gt $stime ]; then
     ipaddr=`echo "select ipaddr from scn_address where id='$i'" | $DBQ`
@@ -61,7 +68,8 @@ for i in `echo "select id from scn_address where status!='0'" | $DBQ`; do
       if [ $cstatus -eq 1 ]; then
         dbevent $i 2
 ## Alert goes here for change from good to bad IP
-        setalert 1 "$i changed to unavailable"
+        ahname=`echo "select hostname from scn_address where id='$i'" | $DBQ`
+        setalert 1 "$ahname changed to unavailable"
       fi
     elif [ $status = 0 ]; then
       echo "update scn_address set status='1',lastcheck='$dnow' where id='$i'" | $DBQ
@@ -70,6 +78,7 @@ for i in `echo "select id from scn_address where status!='0'" | $DBQ`; do
       fi
     fi
   fi
+  ctime=`echo $dnow-$iprescant | bc`
 done
 
 # Count addresses for each subnet and update subnet count
