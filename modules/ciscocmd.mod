@@ -2,9 +2,9 @@
 
 # ccmdexec='ciscocmd -u ciscocmd -p ciscocmd -t 10.2.128.125 -c "sh ver"'
 
-ccmduser='ciscocmd'
-ccmdpass='ciscocmd'
-ccmd='ciscocmd -u $ccmduser -p $ccmdpass'
+ccmduser="ciscocmd"
+ccmdpass="ciscocmd"
+ccmd="ciscocmd -u $ccmduser -p $ccmdpass"
 
 for i in `echo "select id from ccmd_hosts" | $DBQ`; do
   ipaddr=`echo "select ipaddr from ccmd_hosts where id='$i'" | $DBQ`
@@ -15,6 +15,9 @@ for i in `echo "select id from ccmd_hosts" | $DBQ`; do
   echo "update ccmd_hosts set lastchecked='$cdate'" | $DBQ
   echo "insert into ccmd_cpustats set hostid='$i',cpu5sec='$cpu5sec',cpu1min='$cpu1min',cpu5min='$cpu5min'" | $DBQ
 done
+
+
+# ciscocmd -u ciscocmd -p ciscocmd -t 10.2.128.125 -c "sh arp" | grep -v "Protocol  Address" | grep -v "sh arp"
 
 
 

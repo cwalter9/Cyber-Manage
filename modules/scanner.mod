@@ -69,6 +69,9 @@ for i in `echo "select id from scn_address where status!='0'" | $DBQ`; do
         dbevent $i 2
 ## Alert goes here for change from good to bad IP
         ahname=`echo "select hostname from nethosts where ipid='$i'" | $DBQ`
+        if [ $ahname -eq '' ]; then
+          ahname=$ipaddr
+        fi
         setalert 1 "$ahname changed to unavailable"
       fi
     elif [ $status = 0 ]; then
