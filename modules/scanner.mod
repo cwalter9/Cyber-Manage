@@ -48,7 +48,7 @@ done
 
 ctime=`echo $dnow-$iprescant | bc`
 currmin=`date +%M`
-for i in `echo "select id from scn_address where status!='0'" | $DBQ`; do
+for i in `echo "select id from scn_address where status!='0' ORDER BY lastcheck DESC LIMIT 50" | $DBQ`; do
   dnow=`date +%s`
   if [ $currmin -lt 30 ]; then
     hstat=`echo "select status from scn_address where id='$i'" | $DBQ`

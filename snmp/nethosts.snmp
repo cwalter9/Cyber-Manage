@@ -19,13 +19,27 @@ for nhost in `echo "select id from scn_address where status='1' and copied='0'" 
   fi
 done
 
+#
+# IP Address to hostname transitions without DNS
+#
+
+for i in `echo "SELECT id FROM nethosts WHERE hostname='' AND ipaddr LIKE '10.2.12.%'" | $DBQ`; do
+  ipaddr=`echo "select ipaddr from nethosts where id='$i'" | $DBQ`
+  nhname=`echo $ipaddr | gawk -F. '{ print "phone-"$4 }'`
+  echo "update nethosts set hostname='$nhname' where id='$i'" | $DBQ
+done
+
+#
+# Try and figure out hostname from DNS using IP address
+#
+
 for phost in `echo "select id from nethosts where hostname is null" | $DBQ`; do
   ipaddr=`echo "select ipaddr from nethosts where id='$phost'" | $DBQ`
   hname=`dig -x $ipaddr +short | gawk -F. '{ print $1 }'`
   echo "update nethosts set hostname='$hname' where id='$phost'" | $DBQ
 done
 
-for i in `echo "select id from nethosts" | $DBQ`; do
+for i in `echo "select id from nethosts ORDER BY lastchecked DESC LIMIT 50" | $DBQ`; do
   snmpid=`echo "select snmpid from nethosts where id='$i'" | $DBQ`
   snmpver=`echo "select snmpver from snmp_profiles where id='$snmpid'" | $DBQ`
   snmpcomm=`echo "select snmpcomm from snmp_profiles where id='$snmpid'" | $DBQ`
